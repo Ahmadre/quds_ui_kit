@@ -31,6 +31,8 @@ class QudsPopupButton extends StatefulWidget {
 
   final Color? backgroundColor;
 
+  final EdgeInsets? padding;
+
   /// Create an instance of [QudsRadianButton].
   const QudsPopupButton({
     super.key,
@@ -43,6 +45,7 @@ class QudsPopupButton extends StatefulWidget {
     this.borderRadius,
     this.tooltip,
     this.child,
+    this.padding,
   })  : assert(items.length > 0);
 
   @override
@@ -63,6 +66,7 @@ class _QudsPopupButtonState extends State<QudsPopupButton> {
             context: context,
             items: widget.items,
             borderRadius: widget.borderRadius,
+            padding: widget.padding,
           );
         },
         focusNode: widget.focusNode,
@@ -185,6 +189,7 @@ void showQudsPopupMenu({
   Offset? endOffset,
   Color? backgroundColor,
   BorderRadius? borderRadius,
+  EdgeInsets? padding,
 }) {
   final RenderBox button = context.findRenderObject()! as RenderBox;
   final RenderBox overlay =
@@ -207,6 +212,7 @@ void showQudsPopupMenu({
           position: position,
           items: items,
           borderRadius: borderRadius,
+          padding: padding,
           barrierLabel:
               MaterialLocalizations.of(context).modalBarrierDismissLabel,
           capturedThemes:
@@ -219,11 +225,13 @@ class _QudsPopupMenu extends StatefulWidget {
     required this.items,
     this.backgroundColor,
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
+    this.padding = const EdgeInsets.all(8),
   });
 
   final Color? backgroundColor;
   final List<QudsPopupMenuBase> items;
   final BorderRadius? borderRadius;
+  final EdgeInsets? padding;
 
   @override
   State<StatefulWidget> createState() => _QudsPopupMenuState();
@@ -243,19 +251,19 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
   Widget build(BuildContext context) {
     var currentSection = sections.isEmpty ? null : sections.last;
     var currentItems = itemsStack.last;
-    BorderRadius borderRadius = widget.borderRadius ?? BorderRadius.circular(8);
 
     Widget result = Material(
         color: Colors.transparent,
-        borderRadius: borderRadius,
+        borderRadius: widget.borderRadius,
         child: ClipRRect(
-            borderRadius: borderRadius,
+            borderRadius: widget.borderRadius,
             child: SingleChildScrollView(
               child: QudsAutoAnimatedSize(
                   alignment: AlignmentDirectional.topStart,
                   startAfterDuration: const Duration(milliseconds: 0),
-                  child: SizedBox(
+                  child: Container(
                     width: 300,
+                    padding: widget.padding,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -277,7 +285,7 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
                                 sections.last.titleText,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headlineSmall!
+                                    .titleLarge!
                                     .copyWith(fontWeight: FontWeight.bold),
                               )
                             ],
@@ -291,7 +299,7 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
     result = AnimatedContainer(
       decoration: BoxDecoration(
           boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black38)],
-          borderRadius: borderRadius,
+          borderRadius: widget.borderRadius,
           color: _getCurrentBackgroundColor(context)),
       duration: const Duration(milliseconds: 500),
       child: result,
@@ -379,6 +387,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     this.color,
     this.backgroundColor,
     required this.capturedThemes,
+    this.padding,
   }) : itemSizes = List<Size?>.filled(items.length, null);
 
   final RelativeRect position;
@@ -390,6 +399,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   final Color? color;
   final CapturedThemes capturedThemes;
   final Color? backgroundColor;
+  final EdgeInsets? padding;
 
   @override
   Animation<double> createAnimation() {
@@ -419,6 +429,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
       backgroundColor: backgroundColor,
       items: items,
       borderRadius: borderRadius,
+      padding: padding,
     );
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     return MediaQuery.removePadding(
@@ -434,7 +445,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
               position,
               itemSizes,
               Directionality.of(context),
-              mediaQuery.padding,
+              padding ?? mediaQuery.padding,
             ),
             child: capturedThemes.wrap(menu),
           );
