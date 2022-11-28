@@ -285,7 +285,7 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
                                 sections.last.titleText,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .titleLarge!
+                                    .titleMedium!
                                     .copyWith(fontWeight: FontWeight.bold),
                               )
                             ],
