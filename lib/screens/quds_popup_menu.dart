@@ -23,24 +23,27 @@ class QudsPopupButton extends StatefulWidget {
   /// The radius of the ink splash.
   final double? radius;
 
+  /// The main shape for the Menu and SubMenus.
+  final BorderRadius? borderRadius;
+
   /// The tooltip message of this button.
   final String? tooltip;
 
   final Color? backgroundColor;
 
   /// Create an instance of [QudsRadianButton].
-  const QudsPopupButton(
-      {Key? key,
-      required this.items,
-      this.focusNode,
-      this.autofocus = false,
-      this.mouseCursor,
-      this.backgroundColor,
-      this.radius,
-      this.tooltip,
-      this.child})
-      : assert(items.length > 0),
-        super(key: key);
+  const QudsPopupButton({
+    super.key,
+    required this.items,
+    this.focusNode,
+    this.autofocus = false,
+    this.mouseCursor,
+    this.backgroundColor,
+    this.radius,
+    this.borderRadius,
+    this.tooltip,
+    this.child,
+  })  : assert(items.length > 0);
 
   @override
   _QudsPopupButtonState createState() => _QudsPopupButtonState();
@@ -59,6 +62,7 @@ class _QudsPopupButtonState extends State<QudsPopupButton> {
             backgroundColor: widget.backgroundColor,
             context: context,
             items: widget.items,
+            borderRadius: widget.borderRadius,
           );
         },
         focusNode: widget.focusNode,
@@ -173,13 +177,15 @@ class QudsPopupMenuSection extends QudsPopupMenuBase {
 /// [items] the items to be shown in the menu
 /// [useRootNavigator] weather to use root navigator
 /// [backgroundColor] the background of the popup menu
-void showQudsPopupMenu(
-    {required BuildContext context,
-    required List<QudsPopupMenuBase> items,
-    bool useRootNavigator = false,
-    Offset? startOffset,
-    Offset? endOffset,
-    Color? backgroundColor}) {
+void showQudsPopupMenu({
+  required BuildContext context,
+  required List<QudsPopupMenuBase> items,
+  bool useRootNavigator = false,
+  Offset? startOffset,
+  Offset? endOffset,
+  Color? backgroundColor,
+  BorderRadius? borderRadius,
+}) {
   final RenderBox button = context.findRenderObject()! as RenderBox;
   final RenderBox overlay =
       Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
@@ -200,6 +206,7 @@ void showQudsPopupMenu(
           backgroundColor: backgroundColor,
           position: position,
           items: items,
+          borderRadius: borderRadius,
           barrierLabel:
               MaterialLocalizations.of(context).modalBarrierDismissLabel,
           capturedThemes:
@@ -207,11 +214,17 @@ void showQudsPopupMenu(
 }
 
 class _QudsPopupMenu extends StatefulWidget {
+  const _QudsPopupMenu({
+    super.key,
+    required this.items,
+    this.backgroundColor,
+    this.borderRadius = const BorderRadius.all(Radius.circular(8)),
+  });
+
   final Color? backgroundColor;
   final List<QudsPopupMenuBase> items;
+  final BorderRadius? borderRadius;
 
-  const _QudsPopupMenu({Key? key, required this.items, this.backgroundColor})
-      : super(key: key);
   @override
   State<StatefulWidget> createState() => _QudsPopupMenuState();
 }
@@ -230,7 +243,8 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
   Widget build(BuildContext context) {
     var currentSection = sections.isEmpty ? null : sections.last;
     var currentItems = itemsStack.last;
-    BorderRadius borderRadius = BorderRadius.circular(5);
+    BorderRadius borderRadius = widget.borderRadius ?? BorderRadius.circular(8);
+
     Widget result = Material(
         color: Colors.transparent,
         borderRadius: borderRadius,
@@ -263,7 +277,7 @@ class _QudsPopupMenuState extends State<_QudsPopupMenu> {
                                 sections.last.titleText,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headline5!
+                                    .headlineSmall!
                                     .copyWith(fontWeight: FontWeight.bold),
                               )
                             ],
@@ -361,7 +375,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     this.elevation,
     required this.barrierLabel,
     this.semanticLabel,
-    this.shape,
+    this.borderRadius,
     this.color,
     this.backgroundColor,
     required this.capturedThemes,
@@ -372,7 +386,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   final List<Size?> itemSizes;
   final double? elevation;
   final String? semanticLabel;
-  final ShapeBorder? shape;
+  final BorderRadius? borderRadius;
   final Color? color;
   final CapturedThemes capturedThemes;
   final Color? backgroundColor;
@@ -404,6 +418,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     final Widget menu = _QudsPopupMenu(
       backgroundColor: backgroundColor,
       items: items,
+      borderRadius: borderRadius,
     );
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     return MediaQuery.removePadding(

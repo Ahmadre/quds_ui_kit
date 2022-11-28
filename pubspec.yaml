@@ -1,11 +1,11 @@
 name: quds_ui_kit
 description: Flutter UI kit [(animating icons, buttons, texts, counter, digital clock) - page transitions - toasts - dialogs-  pagination - splash screen ...etc ]
-version: 0.0.7+8
+version: 0.0.7+9
 repository: https://github.com/MohammedAsaadAsaad/quds_ui_kit
 homepage: https://www.quds.cc
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
